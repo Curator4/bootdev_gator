@@ -12,12 +12,12 @@ type Command struct {
 	Args []string
 }
 
-type Commands struct {
-	CommandMap map[string]func(*config.State, Command) error
+type CommandRegistry struct {
+	Handlers map[string]func(*config.State, Command) error
 }
 
-func (c *Commands) Run(s *config.State, cmd Command) error {
-	handler, ok := c.CommandMap[cmd.Name]
+func (c *CommandRegistry) Run(s *config.State, cmd Command) error {
+	handler, ok := c.Handlers[cmd.Name]
 	if !ok {
 		return fmt.Errorf("no command: '%s'", cmd.Name)
 	}
@@ -25,8 +25,8 @@ func (c *Commands) Run(s *config.State, cmd Command) error {
 	return handler(s, cmd)
 }
 
-func (c *Commands) Register(name string, f func(*config.State, Command) error) {
-	c.CommandMap[name] = f
+func (c *CommandRegistry) Register(name string, f func(*config.State, Command) error) {
+	c.Handlers[name] = f
 }
 
 func HandlerLogin(s *config.State, cmd Command) error {

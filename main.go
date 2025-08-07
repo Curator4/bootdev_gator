@@ -18,10 +18,10 @@ func main() {
 		Cfg: &cfg,
 	}
 
-	commands_struct := commands.Commands{
-		CommandMap: make(map[string]func(*config.State, commands.Command) error),
+	commandRegistry := commands.CommandRegistry{
+		Handlers: make(map[string]func(*config.State, commands.Command) error),
 	}
-	commands_struct.Register("login", commands.HandlerLogin)
+	commandRegistry.Register("login", commands.HandlerLogin)
 
 	if len(os.Args) < 3 {
 		fmt.Fprintf(os.Stderr, "requies at least 2 args\n")
@@ -32,7 +32,8 @@ func main() {
 		Name: os.Args[1],
 		Args: os.Args[2:],
 	}
-	if err := commands_struct.Run(&state, command); err != nil {
+
+	if err := commandRegistry.Run(&state, command); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to run command %s : %v\n", command.Name, err)
 		os.Exit(1)
 	}
