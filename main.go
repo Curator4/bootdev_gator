@@ -15,27 +15,25 @@ func main() {
 		os.Exit(1)
 	}
 	state := config.State{
-		cfg: cfg,
+		Cfg: &cfg,
 	}
 
-	commands := commands.Commands{
-		var commandMap make(map[string]func(*config.State, commands.Command) error)
+	commands_struct := commands.Commands{
+		CommandMap: make(map[string]func(*config.State, commands.Command) error),
 	}
-	commands.Register("login", commands.HandlerLogin)
+	commands_struct.Register("login", commands.HandlerLogin)
 
-	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "requies at least 2 args")
+	if len(os.Args) < 3 {
+		fmt.Fprintf(os.Stderr, "requies at least 2 args\n")
 		os.Exit(1)
 	}
 
 	command := commands.Command{
-		name: os.Args[0],
-		args: os.Args[1:],
+		Name: os.Args[1],
+		Args: os.Args[2:],
 	}
-	commands.Run(state, command)
-
-
-	
-
-	fmt.Printf("ConfigL %+v\n", cfg)
+	if err := commands_struct.Run(&state, command); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to run command %s : %v\n", command.Name, err)
+		os.Exit(1)
+	}
 }
