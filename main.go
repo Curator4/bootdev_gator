@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"fmt"
 
 	"github.com/curator4/bootdev_gator/internal/config"
 )

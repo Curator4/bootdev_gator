@@ -3,7 +3,6 @@ package config
 import (
 	"os"
 	"fmt"
-	"log"
 	"encoding/json"
 	"path/filepath"
 )
@@ -16,7 +15,13 @@ type Config struct {
 }
 
 func Read() (Config, error) {
-	byteContent, err := os.ReadFile(getConfigPath())
+
+	configPath, err := getConfigPath()
+	if err != nil {
+		return Config{}, err
+	}
+
+	byteContent, err := os.ReadFile(configPath)
 	if err != nil {
 		return Config{}, fmt.Errorf("reading config file: %w", err)
 	}
@@ -44,7 +49,12 @@ func write(cfg Config) error {
 		return fmt.Errorf("marshalling config json: %w", err)
 	}
 
-	if err := os.WriteFile(getConfigPath(), byteContent, 0644); err != nil {
+	configPath, err := getConfigPath()
+	if err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(configPath, byteContent, 0644); err != nil {
 		return fmt.Errorf("writing config file: %w", err)
 	}
 
